@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "87328541616",
+    "project_id": "chrisander-pos",
+    "storage_bucket": "chrisander-pos.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:87328541616:android:a87ab43ef2c85574cda475",
+        "android_client_info": {
+          "package_name": "com.chrisander.pos"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "87328541616-iafvlkci3e6enl7ofn9clv3495s6v8h8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtAdzL1hrhgFwRmNLOkIMa4hDgK6r8IDQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "87328541616-iafvlkci3e6enl7ofn9clv3495s6v8h8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
