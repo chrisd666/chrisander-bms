@@ -1,4 +1,4 @@
-import 'package:bms/models/product_model.dart';
+import 'package:bms/models/product.dart';
 import 'package:flutter/material.dart';
 
 class InventoryDialogForm extends StatefulWidget {
@@ -29,25 +29,31 @@ class _InventoryDialogFormState extends State<InventoryDialogForm> {
 
   @override
   void dispose() {
+    super.dispose();
+
     _nameController.dispose();
     _quantityController.dispose();
     _priceController.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     Future<void> addProduct() {
-      return Product.productsRef
-          .add(Product(
+      return Product(
               name: _nameController.text,
               quantity: int.parse(_quantityController.text),
-              price: int.parse(_priceController.text)))
-          .then((value) => print("Product added"))
-          .catchError((error) => print("Failed to add product: $error"));
+              price: int.parse(_priceController.text))
+          .add();
     }
 
-    print(widget.product);
+    Future<void> updateProduct() {
+      return Product(
+              id: widget.product!.id,
+              name: _nameController.text,
+              quantity: int.parse(_quantityController.text),
+              price: int.parse(_priceController.text))
+          .update();
+    }
 
     return StatefulBuilder(builder: (context, setState) {
       return AlertDialog(
@@ -121,7 +127,11 @@ class _InventoryDialogFormState extends State<InventoryDialogForm> {
                   Navigator.of(context).pop();
                 }
 
-                addProduct();
+                if (widget.product == null) {
+                  addProduct();
+                } else {
+                  updateProduct();
+                }
               },
               child: const Text('SUBMIT'))
         ],
