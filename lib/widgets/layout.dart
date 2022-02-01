@@ -11,16 +11,47 @@ class Layout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      child: Column(children: [
-        if (heading != null)
-          LayoutHeading(
-            heading: heading!,
-            actions: actions,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Chrisander Wines, Quepem"),
+      ),
+      drawer: Drawer(
+        child: ListView(padding: EdgeInsets.zero, children: [
+          DrawerHeader(
+            child: Text(
+              "Chrisander Wines, Quepem",
+              style: Theme.of(context).textTheme.headline6,
+            ),
           ),
-        child
-      ]),
+          ListTile(
+            title: const Text('Sales'),
+            leading: const Icon(Icons.money),
+            onTap: () {
+              Navigator.pushNamed(context, '/');
+            },
+          ),
+          ListTile(
+            title: const Text('Inventory'),
+            leading: const Icon(Icons.inventory),
+            onTap: () {
+              Navigator.pushNamed(context, 'inventory');
+            },
+          )
+        ]),
+      ),
+      body: SingleChildScrollView(
+        child: Container(
+          margin: const EdgeInsets.all(16),
+          child: Column(children: [
+            if (heading != null)
+              LayoutHeading(
+                heading: heading!,
+                actions: actions,
+              ),
+            child
+          ]),
+        ),
+      ),
     );
   }
 }

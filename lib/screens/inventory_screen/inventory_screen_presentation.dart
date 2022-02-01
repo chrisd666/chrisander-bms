@@ -21,73 +21,71 @@ class InventoryScreenPresentation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Layout(
-        heading: "Inventory",
-        actions: [
-          ElevatedButton(
-              child: const Text("ADD PRODUCT"),
-              onPressed: () async {
-                await showCreateUpdateDialogForm(context);
-              })
-        ],
-        child: StreamBuilder<QuerySnapshot>(
-            stream: products,
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                return const Text("Something went wrong!");
-              }
+    return Layout(
+      heading: "Inventory",
+      actions: [
+        ElevatedButton(
+            child: const Text("ADD PRODUCT"),
+            onPressed: () async {
+              await showCreateUpdateDialogForm(context);
+            })
+      ],
+      child: StreamBuilder<QuerySnapshot>(
+          stream: products,
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return const Text("Something went wrong!");
+            }
 
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Text("Loading...");
-              }
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Text("Loading...");
+            }
 
-              return DataTable(
-                headingTextStyle: const TextStyle(fontWeight: FontWeight.bold),
-                columns: const [
-                  DataColumn(label: Text("Item")),
-                  DataColumn(label: Text("Price"), numeric: true),
-                  DataColumn(label: Text("Quantity"), numeric: true),
-                  DataColumn(label: Text("Actions")),
-                ],
-                rows: snapshot.data!.docs
-                    .map((DocumentSnapshot product) => DataRow(cells: [
-                          DataCell(Text(product['name'])),
-                          DataCell(Text(product['price'].toString())),
-                          DataCell(Text(product['quantity'].toString())),
-                          DataCell(Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.edit),
-                                color: Theme.of(context).colorScheme.primary,
-                                onPressed: () async {
-                                  await showCreateUpdateDialogForm(context,
-                                      product: Product(
-                                          id: product.id,
-                                          name: product['name'],
-                                          price: product['price'],
-                                          quantity: product['quantity']));
-                                },
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.delete),
-                                color: Theme.of(context).colorScheme.error,
-                                onPressed: () async {
-                                  showDeleteProductDialog(context,
-                                      productId: product.id,
-                                      productName: product['name'],
-                                      handleDelete: () =>
-                                          Product.delete(product.id));
-                                },
-                              ),
-                            ],
-                          )),
-                        ]))
-                    .toList(),
-              );
-            }),
-      ),
+            return DataTable(
+              headingTextStyle: const TextStyle(fontWeight: FontWeight.bold),
+              columns: const [
+                DataColumn(label: Text("Item")),
+                DataColumn(label: Text("Price"), numeric: true),
+                DataColumn(label: Text("Quantity"), numeric: true),
+                DataColumn(label: Text("Actions")),
+              ],
+              rows: snapshot.data!.docs
+                  .map((DocumentSnapshot product) => DataRow(cells: [
+                        DataCell(Text(product['name'])),
+                        DataCell(Text(product['price'].toString())),
+                        DataCell(Text(product['quantity'].toString())),
+                        DataCell(Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.edit),
+                              color: Theme.of(context).colorScheme.primary,
+                              onPressed: () async {
+                                await showCreateUpdateDialogForm(context,
+                                    product: Product(
+                                        id: product.id,
+                                        name: product['name'],
+                                        unitPrice: product['unitPrice'],
+                                        unitsInStock: product['unitsInStock']));
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete),
+                              color: Theme.of(context).colorScheme.error,
+                              onPressed: () async {
+                                showDeleteProductDialog(context,
+                                    productId: product.id,
+                                    productName: product['name'],
+                                    handleDelete: () =>
+                                        Product.delete(product.id));
+                              },
+                            ),
+                          ],
+                        )),
+                      ]))
+                  .toList(),
+            );
+          }),
     );
   }
 }

@@ -1,18 +1,18 @@
-import 'package:bms/models/product.dart';
+import 'package:bms/models/sale.dart';
 import 'package:flutter/material.dart';
 
-class InventoryDialogForm extends StatefulWidget {
-  final Product? product;
+class SaleDialogForm extends StatefulWidget {
+  final Sale? sale;
 
-  const InventoryDialogForm({Key? key, this.product}) : super(key: key);
+  const SaleDialogForm({Key? key, this.sale}) : super(key: key);
 
   @override
-  _InventoryDialogFormState createState() => _InventoryDialogFormState();
+  _SaleDialogFormState createState() => _SaleDialogFormState();
 }
 
-class _InventoryDialogFormState extends State<InventoryDialogForm> {
+class _SaleDialogFormState extends State<SaleDialogForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _productController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
 
@@ -20,45 +20,45 @@ class _InventoryDialogFormState extends State<InventoryDialogForm> {
   void initState() {
     super.initState();
 
-    _nameController.text = widget.product == null ? "" : widget.product!.name;
+    _productController.text = widget.sale == null ? "" : widget.sale!.productId;
     _quantityController.text =
-        widget.product == null ? "" : widget.product!.price.toString();
+        widget.sale == null ? "" : widget.sale!.quantity.toString();
     _priceController.text =
-        widget.product == null ? "" : widget.product!.quantity.toString();
+        widget.sale == null ? "" : widget.sale!.totalPrice.toString();
   }
 
   @override
   void dispose() {
     super.dispose();
 
-    _nameController.dispose();
+    _productController.dispose();
     _quantityController.dispose();
     _priceController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    Future<void> addProduct() {
-      return Product(
-              name: _nameController.text,
+    Future<void> addSale() {
+      return Sale(
+              productId: _productController.text,
               quantity: int.parse(_quantityController.text),
-              price: int.parse(_priceController.text))
+              totalPrice: int.parse(_priceController.text))
           .add();
     }
 
-    Future<void> updateProduct() {
-      return Product(
-              id: widget.product!.id,
-              name: _nameController.text,
+    Future<void> updateSale() {
+      return Sale(
+              id: widget.sale!.id,
+              productId: _productController.text,
               quantity: int.parse(_quantityController.text),
-              price: int.parse(_priceController.text))
+              totalPrice: int.parse(_priceController.text))
           .update();
     }
 
     return StatefulBuilder(builder: (context, setState) {
       return AlertDialog(
         title: Text(
-          "${widget.product == null ? "Add" : "Update"} Product",
+          "${widget.sale == null ? "Add" : "Update"} Sale",
           style: Theme.of(context).textTheme.headline6,
         ),
         content: Form(
@@ -67,7 +67,7 @@ class _InventoryDialogFormState extends State<InventoryDialogForm> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextFormField(
-                  controller: _nameController,
+                  controller: _productController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return "Invalid Field";
@@ -127,10 +127,10 @@ class _InventoryDialogFormState extends State<InventoryDialogForm> {
                   Navigator.of(context).pop();
                 }
 
-                if (widget.product == null) {
-                  addProduct();
+                if (widget.sale == null) {
+                  addSale();
                 } else {
-                  updateProduct();
+                  updateSale();
                 }
               },
               child: const Text('SUBMIT'))

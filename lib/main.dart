@@ -1,4 +1,5 @@
 import 'package:bms/screens/inventory_screen/inventory_screen.dart';
+import 'package:bms/screens/sales_screen/sale_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -23,7 +24,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: InventoryScreen(),
+      routes: {
+        '/': (context) => const SaleScreen(),
+        'inventory': (context) => InventoryScreen()
+      },
     );
   }
 }

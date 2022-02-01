@@ -1,9 +1,9 @@
 import 'package:bms/models/product.dart';
 import 'package:bms/screens/inventory_screen/inventory_screen_presentation.dart';
 import 'package:bms/widgets/confirmation_dialog.dart';
-import 'package:bms/widgets/inventory_dialog_form.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'inventory_dialog_form.dart';
 
 class InventoryScreen extends StatelessWidget {
   final Stream<QuerySnapshot> _productsStream = Product.productsRef.snapshots();
@@ -36,14 +36,10 @@ class InventoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      drawer: const Drawer(),
-      body: InventoryScreenPresentation(
-        products: _productsStream,
-        showCreateUpdateDialogForm: _showCreateUpdateDialogForm,
-        showDeleteProductDialog: _showDeleteProductDialog,
-      ),
+    return InventoryScreenPresentation(
+      products: _productsStream,
+      showCreateUpdateDialogForm: _showCreateUpdateDialogForm,
+      showDeleteProductDialog: _showDeleteProductDialog,
     );
   }
 }
