@@ -27,15 +27,19 @@ class SaleScreen extends StatelessWidget {
           },
         )
       ],
-      child: DataTable(
-        headingTextStyle: const TextStyle(fontWeight: FontWeight.bold),
-        columns: const [
-          DataColumn(label: Text("Product")),
-          DataColumn(label: Text("Unit Price")),
-          DataColumn(label: Text("Sold")),
-          DataColumn(label: Text("Sold At"))
-        ],
-        rows: [],
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: DataTable(
+          headingTextStyle:
+              const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+          columns: const [
+            DataColumn(label: Text("Product")),
+            DataColumn(label: Text("Unit Price")),
+            DataColumn(label: Text("Sold")),
+            DataColumn(label: Text("Sold At"))
+          ],
+          rows: [],
+        ),
       ),
     );
   }

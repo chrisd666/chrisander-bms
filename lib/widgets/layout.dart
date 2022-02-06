@@ -24,19 +24,19 @@ class Layout extends StatelessWidget {
             ),
           ),
           ListTile(
-            title: const Text('Sales'),
-            leading: const Icon(Icons.money),
+            title: const Text('Inventory'),
+            leading: const Icon(Icons.inventory),
             onTap: () {
               Navigator.pushNamed(context, '/');
             },
           ),
           ListTile(
-            title: const Text('Inventory'),
-            leading: const Icon(Icons.inventory),
+            title: const Text('Sales'),
+            leading: const Icon(Icons.money),
             onTap: () {
-              Navigator.pushNamed(context, 'inventory');
+              Navigator.pushNamed(context, 'sales');
             },
-          )
+          ),
         ]),
       ),
       body: SingleChildScrollView(

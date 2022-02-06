@@ -25,8 +25,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       routes: {
-        '/': (context) => const SaleScreen(),
-        'inventory': (context) => InventoryScreen()
+        '/': (context) => InventoryScreen(),
+        'sales': (context) => const SaleScreen()
       },
     );
   }

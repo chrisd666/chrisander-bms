@@ -5,21 +5,29 @@ class Product {
   final String name;
   final int unitsInStock;
   final int unitPrice;
+  final int? totalSales;
 
   Product(
       {this.id,
       required this.name,
       required this.unitsInStock,
-      required this.unitPrice});
+      required this.unitPrice,
+      this.totalSales});
 
   Product.fromJson(Map<String, Object?> json)
       : this(
-            name: json['name']! as String,
-            unitsInStock: json['unitsInStock']! as int,
-            unitPrice: json['unitPrice']! as int);
+          name: json['name']! as String,
+          unitsInStock: json['unitsInStock']! as int,
+          unitPrice: json['unitPrice']! as int,
+        );
 
   Map<String, Object?> toJson() {
-    return {'name': name, 'unitsInStock': unitsInStock, 'unitPrice': unitPrice};
+    return {
+      'name': name,
+      'unitsInStock': unitsInStock,
+      'unitPrice': unitPrice,
+      // 'totalSales': totalSales
+    };
   }
 
   static List<Product> mockProducts = [
@@ -49,10 +57,17 @@ class Product {
         .catchError((error) => print("Failed to add product: $error"));
   }
 
-  Future<void> update() {
+  static findOne(String id) {
+    return productsRef.doc(id).get().then((value) {
+      print("Product found");
+      return Product.fromJson(value as Map<String, Object?>);
+    }).catchError((error) => print("Failed to find product: $error"));
+  }
+
+  static Future<void> update(String id, Map<String, Object> data) {
     return productsRef
         .doc(id)
-        .update(toJson())
+        .update(data)
         .then((value) => print("Product updated"))
         .catchError((error) => print("Failed to update product: $error"));
   }

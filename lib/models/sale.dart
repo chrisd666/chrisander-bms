@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:bms/models/product.dart';
 
 class Sale {
   final String? id;
@@ -49,10 +50,19 @@ class Sale {
       FirebaseFirestore.instance.collection('sales');
 
   Future<void> add() {
-    return salesRef
-        .add(toJson())
-        .then((value) => print("Sale added"))
-        .catchError((error) => print("Failed to add sales: $error"));
+    return salesRef.add(toJson()).then((value) {
+      print("Sale added");
+    }).catchError((error) => print("Failed to add sales: $error"));
+  }
+
+  findAll(Iterable sales) {
+    List<Sale> salesWithProduct = [];
+
+    sales.forEach((sale) {
+      Product product = Product.findOne(sale["productId"]);
+
+      print(product);
+    });
   }
 
   Future<void> update() {

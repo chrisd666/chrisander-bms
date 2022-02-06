@@ -1,5 +1,6 @@
 import 'package:bms/models/product.dart';
 import 'package:bms/screens/inventory_screen/inventory_screen_presentation.dart';
+import 'package:bms/screens/sales_screen/sale_dialog_form.dart';
 import 'package:bms/widgets/confirmation_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -34,12 +35,21 @@ class InventoryScreen extends StatelessWidget {
         });
   }
 
+  Future<void> _showSaleDialogForm(BuildContext context,
+      {Product? product}) async {
+    return await showDialog(
+        context: context,
+        builder: (context) {
+          return SaleDialogForm(product: product);
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return InventoryScreenPresentation(
-      products: _productsStream,
-      showCreateUpdateDialogForm: _showCreateUpdateDialogForm,
-      showDeleteProductDialog: _showDeleteProductDialog,
-    );
+        products: _productsStream,
+        showCreateUpdateDialogForm: _showCreateUpdateDialogForm,
+        showDeleteProductDialog: _showDeleteProductDialog,
+        showSaleDialogForm: _showSaleDialogForm);
   }
 }
