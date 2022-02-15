@@ -55,14 +55,23 @@ class Sale {
     }).catchError((error) => print("Failed to add sales: $error"));
   }
 
-  findAll(Iterable sales) {
-    List<Sale> salesWithProduct = [];
+  static Future<List> findAll(List sales) async {
+    List<Map<String, dynamic>> salesWithProduct = [];
 
-    sales.forEach((sale) {
-      Product product = Product.findOne(sale["productId"]);
+    for (int i = 0; i < sales.length; i++) {
+      var sale = sales[i];
 
-      print(product);
-    });
+      dynamic product = await Product.findOne(sale["productId"]);
+
+      salesWithProduct.add({
+        'product': product['name'],
+        'unitPrice': product['unitPrice'],
+        'quantity': sale['quantity'],
+        'totalPrice': sale['totalPrice']
+      });
+    }
+
+    return salesWithProduct;
   }
 
   Future<void> update() {

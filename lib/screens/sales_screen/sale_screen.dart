@@ -1,10 +1,13 @@
 import 'package:bms/screens/sales_screen/sale_dialog_form.dart';
 import 'package:bms/widgets/layout.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:bms/models/sale.dart';
 
 class SaleScreen extends StatelessWidget {
-  const SaleScreen({Key? key}) : super(key: key);
+  final Stream<QuerySnapshot> _salesStream = Sale.salesRef.snapshots();
+
+  SaleScreen({Key? key}) : super(key: key);
 
   Future<void> _showCreateUpdateDialogForm(BuildContext context,
       {Sale? sale}) async {
@@ -27,20 +30,38 @@ class SaleScreen extends StatelessWidget {
           },
         )
       ],
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: DataTable(
-          headingTextStyle:
-              const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-          columns: const [
-            DataColumn(label: Text("Product")),
-            DataColumn(label: Text("Unit Price")),
-            DataColumn(label: Text("Sold")),
-            DataColumn(label: Text("Sold At"))
-          ],
-          rows: [],
-        ),
-      ),
+      child: StreamBuilder<QuerySnapshot>(
+          stream: _salesStream,
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return const Text("Something went wrong!");
+            }
+
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Text("Loading...");
+            }
+
+            return FutureBuilder(
+                future: Sale.findAll(snapshot.data!.docs),
+                builder: (context, snapshot) {
+                  print(snapshot);
+
+                  return SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: DataTable(
+                      headingTextStyle: const TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.black),
+                      columns: const [
+                        DataColumn(label: Text("Product")),
+                        DataColumn(label: Text("Unit Price")),
+                        DataColumn(label: Text("Sold")),
+                        DataColumn(label: Text("Total Price"))
+                      ],
+                      rows: [],
+                    ),
+                  );
+                });
+          }),
     );
   }
 }

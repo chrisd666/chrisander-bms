@@ -57,10 +57,14 @@ class Product {
         .catchError((error) => print("Failed to add product: $error"));
   }
 
-  static findOne(String id) {
+  static findOne(String id) async {
     return productsRef.doc(id).get().then((value) {
       print("Product found");
-      return Product.fromJson(value as Map<String, Object?>);
+      return {
+        "name": value['name'],
+        'unitsInStock': value['unitsInStock'],
+        'unitPrice': value['unitPrice']
+      };
     }).catchError((error) => print("Failed to find product: $error"));
   }
 

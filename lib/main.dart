@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/': (context) => InventoryScreen(),
-        'sales': (context) => const SaleScreen()
+        'sales': (context) => SaleScreen()
       },
     );
   }

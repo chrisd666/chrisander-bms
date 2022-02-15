@@ -47,12 +47,11 @@ class _InventoryDialogFormState extends State<InventoryDialogForm> {
     }
 
     Future<void> updateProduct() {
-      return Product(
-              id: widget.product!.id,
-              name: _nameController.text,
-              unitsInStock: int.parse(_quantityController.text),
-              unitPrice: int.parse(_priceController.text))
-          .update();
+      return Product.update(widget.product!.id!, {
+        "name": _nameController.text,
+        "unitsInStock": int.parse(_quantityController.text),
+        "unitPrice": int.parse(_priceController.text)
+      });
     }
 
     return StatefulBuilder(builder: (context, setState) {
