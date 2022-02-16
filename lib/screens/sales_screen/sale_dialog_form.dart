@@ -1,7 +1,6 @@
 import 'package:bms/models/sale.dart';
 import 'package:bms/models/product.dart';
 import 'package:bms/utils.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class SaleDialogForm extends StatefulWidget {
@@ -25,11 +24,11 @@ class _SaleDialogFormState extends State<SaleDialogForm> {
       int totalPrice =
           widget.product!.unitPrice * int.parse(_quantityController.text);
       ;
-      int unitsInStock = _unitsInStock - totalPrice;
+      // int unitsInStock = _unitsInStock - int.parse(_quantityController.text);
 
       setState(() {
         _totalPrice = totalPrice;
-        _unitsInStock = unitsInStock;
+        // _unitsInStock = unitsInStock;
       });
     } else {
       setState(() {
@@ -68,8 +67,10 @@ class _SaleDialogFormState extends State<SaleDialogForm> {
               totalPrice: _totalPrice!)
           .add()
           .then((value) {
-        Product.update(widget.product!.id!,
-            {"unitsInStock": _unitsInStock, "totalSales": totalSales});
+        Product.update(widget.product!.id!, {
+          "unitsInStock": _unitsInStock - int.parse(_quantityController.text),
+          "totalSales": totalSales
+        });
       });
     }
 

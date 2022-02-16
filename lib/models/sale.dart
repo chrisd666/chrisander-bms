@@ -24,9 +24,10 @@ class Sale {
 
   Map<String, Object?> toJson() {
     return {
+      'businessId': 'nl4AolUR6ViZp3u8NbZc',
       'productId': productId,
       'quantity': quantity,
-      'totalPrice': totalPrice
+      'totalPrice': totalPrice,
     };
   }
 

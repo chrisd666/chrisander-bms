@@ -22,14 +22,14 @@ class SaleScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Layout(
       heading: 'Recent Sales',
-      actions: [
-        ElevatedButton(
-          child: const Text("NEW SALE"),
-          onPressed: () async {
-            await _showCreateUpdateDialogForm(context);
-          },
-        )
-      ],
+      // actions: [
+      //   ElevatedButton(
+      //     child: const Text("NEW SALE"),
+      //     onPressed: () async {
+      //       await _showCreateUpdateDialogForm(context);
+      //     },
+      //   )
+      // ],
       child: StreamBuilder<QuerySnapshot>(
           stream: _salesStream,
           builder: (context, snapshot) {
@@ -43,23 +43,41 @@ class SaleScreen extends StatelessWidget {
 
             return FutureBuilder(
                 future: Sale.findAll(snapshot.data!.docs),
-                builder: (context, snapshot) {
-                  print(snapshot);
+                builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasError) {
+                      return const Text("Something went wrong");
+                    }
 
-                  return SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: DataTable(
-                      headingTextStyle: const TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.black),
-                      columns: const [
-                        DataColumn(label: Text("Product")),
-                        DataColumn(label: Text("Unit Price")),
-                        DataColumn(label: Text("Sold")),
-                        DataColumn(label: Text("Total Price"))
-                      ],
-                      rows: [],
-                    ),
-                  );
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: DataTable(
+                        headingTextStyle: const TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.black),
+                        columns: const [
+                          DataColumn(label: Text("Product")),
+                          DataColumn(label: Text("Unit Price"), numeric: true),
+                          DataColumn(label: Text("Sold"), numeric: true),
+                          DataColumn(label: Text("Total Price"), numeric: true),
+                          // DataColumn(label: Text('Actions'))
+                        ],
+                        rows: snapshot.data!.map((e) {
+                          return DataRow(cells: [
+                            DataCell(Text(e['product'])),
+                            DataCell(Text(e['unitPrice'].toString())),
+                            DataCell(Text(e['quantity'].toString())),
+                            DataCell(Text(e['totalPrice'].toString())),
+                            // DataCell(IconButton(
+                            //   icon: const Icon(Icons.edit),
+                            //   onPressed: () {},
+                            // ))
+                          ]);
+                        }).toList(),
+                      ),
+                    );
+                  }
+
+                  return const Text("Loading");
                 });
           }),
     );

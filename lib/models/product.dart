@@ -23,6 +23,7 @@ class Product {
 
   Map<String, Object?> toJson() {
     return {
+      'businessId': 'nl4AolUR6ViZp3u8NbZc',
       'name': name,
       'unitsInStock': unitsInStock,
       'unitPrice': unitPrice,
