@@ -1,4 +1,5 @@
 import 'package:bms/widgets/layout_heading.dart';
+import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:flutter/material.dart';
 
 class Layout extends StatelessWidget {
@@ -39,17 +40,20 @@ class Layout extends StatelessWidget {
           ),
         ]),
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          margin: const EdgeInsets.all(16),
-          child: Column(children: [
-            if (heading != null)
-              LayoutHeading(
-                heading: heading!,
-                actions: actions,
-              ),
-            child
-          ]),
+      body: DoubleBackToCloseApp(
+        snackBar: const SnackBar(content: Text('Tab back again to leave')),
+        child: SingleChildScrollView(
+          child: Container(
+            margin: const EdgeInsets.all(16),
+            child: Column(children: [
+              if (heading != null)
+                LayoutHeading(
+                  heading: heading!,
+                  actions: actions,
+                ),
+              child
+            ]),
+          ),
         ),
       ),
     );
