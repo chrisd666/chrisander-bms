@@ -1,3 +1,4 @@
+import 'package:bms/screens/inventory_log_screen.dart';
 import 'package:bms/screens/inventory_screen/inventory_screen.dart';
 import 'package:bms/screens/sales_screen/sale_screen.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,8 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/': (context) => InventoryScreen(),
-        'sales': (context) => SaleScreen()
+        'sales': (context) => SaleScreen(),
+        'inventory-logs': (context) => InventoryLogScreen()
       },
     );
   }

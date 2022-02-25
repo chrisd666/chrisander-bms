@@ -1,36 +1,23 @@
 import 'package:bms/models/product.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
-class InventoryDialogForm extends StatefulWidget {
-  final Product? product;
+enum UnitType { unit, dozen }
 
-  const InventoryDialogForm({Key? key, this.product}) : super(key: key);
-
-  @override
-  _InventoryDialogFormState createState() => _InventoryDialogFormState();
-}
-
-class _InventoryDialogFormState extends State<InventoryDialogForm> {
+class InventoryDialogForm extends HookWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
+  final Product? product;
 
-  @override
-  void initState() {
-    super.initState();
+  InventoryDialogForm({Key? key, this.product}) : super(key: key);
 
-    _nameController.text = widget.product == null ? "" : widget.product!.name;
-    _quantityController.text =
-        widget.product == null ? "" : widget.product!.unitsInStock.toString();
-    _priceController.text =
-        widget.product == null ? "" : widget.product!.unitPrice.toString();
+  getUnitTypeString(UnitType unitType) {
+    return unitType.name == UnitType.unit.name ? 'unit(s)' : 'dozen';
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-
+  void disposeControllers() {
     _nameController.dispose();
     _quantityController.dispose();
     _priceController.dispose();
@@ -38,16 +25,34 @@ class _InventoryDialogFormState extends State<InventoryDialogForm> {
 
   @override
   Widget build(BuildContext context) {
+    final selectedUnit = useState<UnitType>(UnitType.unit);
+
+    useEffect(() {
+      _nameController.text = product == null ? "" : product!.name;
+      _quantityController.text =
+          product == null ? "" : product!.unitsInStock.toString();
+      _priceController.text =
+          product == null ? "" : product!.unitPrice.toString();
+
+      return disposeControllers;
+    }, []);
+
     Future<void> addProduct() {
+      int unitsInStock = int.parse(_quantityController.text);
+
+      if (selectedUnit.value == UnitType.dozen) {
+        unitsInStock *= 12;
+      }
+
       return Product(
               name: _nameController.text,
-              unitsInStock: int.parse(_quantityController.text),
+              unitsInStock: unitsInStock,
               unitPrice: int.parse(_priceController.text))
           .add();
     }
 
     Future<void> updateProduct() {
-      return Product.update(widget.product!.id!, {
+      return Product.update(product!.id!, {
         "name": _nameController.text,
         "unitsInStock": int.parse(_quantityController.text),
         "unitPrice": int.parse(_priceController.text)
@@ -57,7 +62,7 @@ class _InventoryDialogFormState extends State<InventoryDialogForm> {
     return StatefulBuilder(builder: (context, setState) {
       return AlertDialog(
         title: Text(
-          "${widget.product == null ? "Add" : "Update"} Product",
+          "${product == null ? "Add" : "Update"} Product",
           style: Theme.of(context).textTheme.headline6,
         ),
         content: Form(
@@ -94,19 +99,51 @@ class _InventoryDialogFormState extends State<InventoryDialogForm> {
                     labelText: "Price",
                   ),
                 ),
-                TextFormField(
-                  controller: _quantityController,
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Invalid Field";
-                    }
+                Container(
+                  margin: const EdgeInsets.only(top: 10),
+                  child: Row(
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: TextFormField(
+                          controller: _quantityController,
+                          keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Invalid Field";
+                            }
 
-                    return null;
-                  },
-                  decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: "Quantity",
+                            return null;
+                          },
+                          decoration: const InputDecoration(
+                              border: UnderlineInputBorder(),
+                              labelText: "Quantity",
+                              contentPadding: EdgeInsets.all(0)),
+                        ),
+                      ),
+                      Expanded(
+                        child: DropdownButtonFormField<String>(
+                            value: getUnitTypeString(selectedUnit.value),
+                            decoration: const InputDecoration(
+                                contentPadding: EdgeInsets.all(0)),
+                            items: const [
+                              DropdownMenuItem(
+                                value: 'unit(s)',
+                                child: Text('unit(s)'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'dozen',
+                                child: Text('dozen'),
+                              )
+                            ],
+                            onChanged: (val) {
+                              selectedUnit.value = val! == 'unit(s)'
+                                  ? UnitType.unit
+                                  : UnitType.dozen;
+                            }),
+                      ),
+                    ],
                   ),
                 )
               ],
@@ -126,7 +163,7 @@ class _InventoryDialogFormState extends State<InventoryDialogForm> {
                   Navigator.of(context).pop();
                 }
 
-                if (widget.product == null) {
+                if (product == null) {
                   addProduct();
                 } else {
                   updateProduct();
