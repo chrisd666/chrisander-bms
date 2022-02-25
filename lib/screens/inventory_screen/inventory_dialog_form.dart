@@ -1,8 +1,7 @@
 import 'package:bms/models/product.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-
-enum UnitType { unit, dozen }
+import '../../widgets/units_selection_button_field.dart';
 
 class InventoryDialogForm extends HookWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -13,11 +12,7 @@ class InventoryDialogForm extends HookWidget {
 
   InventoryDialogForm({Key? key, this.product}) : super(key: key);
 
-  getUnitTypeString(UnitType unitType) {
-    return unitType.name == UnitType.unit.name ? 'unit(s)' : 'dozen';
-  }
-
-  void disposeControllers() {
+  void _disposeControllers() {
     _nameController.dispose();
     _quantityController.dispose();
     _priceController.dispose();
@@ -34,7 +29,7 @@ class InventoryDialogForm extends HookWidget {
       _priceController.text =
           product == null ? "" : product!.unitPrice.toString();
 
-      return disposeControllers;
+      return _disposeControllers;
     }, []);
 
     Future<void> addProduct() {
@@ -123,25 +118,8 @@ class InventoryDialogForm extends HookWidget {
                         ),
                       ),
                       Expanded(
-                        child: DropdownButtonFormField<String>(
-                            value: getUnitTypeString(selectedUnit.value),
-                            decoration: const InputDecoration(
-                                contentPadding: EdgeInsets.all(0)),
-                            items: const [
-                              DropdownMenuItem(
-                                value: 'unit(s)',
-                                child: Text('unit(s)'),
-                              ),
-                              DropdownMenuItem(
-                                value: 'dozen',
-                                child: Text('dozen'),
-                              )
-                            ],
-                            onChanged: (val) {
-                              selectedUnit.value = val! == 'unit(s)'
-                                  ? UnitType.unit
-                                  : UnitType.dozen;
-                            }),
+                        child: UnitsSelectionButtonField(
+                            selectedUnit: selectedUnit),
                       ),
                     ],
                   ),

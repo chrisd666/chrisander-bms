@@ -2,72 +2,48 @@ import 'package:bms/models/sale.dart';
 import 'package:bms/models/product.dart';
 import 'package:bms/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
-class SaleDialogForm extends StatefulWidget {
+class SaleDialogForm extends HookWidget {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _quantityController = TextEditingController();
   final Sale? sale;
   final Product? product;
 
-  const SaleDialogForm({Key? key, this.sale, this.product}) : super(key: key);
+  SaleDialogForm({Key? key, this.sale, this.product}) : super(key: key);
 
-  @override
-  _SaleDialogFormState createState() => _SaleDialogFormState();
-}
-
-class _SaleDialogFormState extends State<SaleDialogForm> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _quantityController = TextEditingController();
-  int? _totalPrice;
-  int _unitsInStock = 0;
-
-  void _handleTotalPrice() {
-    if (widget.product != null && isNumeric(_quantityController.text)) {
-      int totalPrice =
-          widget.product!.unitPrice * int.parse(_quantityController.text);
-      ;
-      // int unitsInStock = _unitsInStock - int.parse(_quantityController.text);
-
-      setState(() {
-        _totalPrice = totalPrice;
-        // _unitsInStock = unitsInStock;
-      });
-    } else {
-      setState(() {
-        _totalPrice = 0;
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    _quantityController.text =
-        widget.sale == null ? "" : widget.sale!.quantity.toString();
-    _quantityController.addListener(_handleTotalPrice);
-    _unitsInStock = widget.product == null ? 0 : widget.product!.unitsInStock;
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-
+  void _disposeControllers() {
     _quantityController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    int? _totalPrice;
+    int _unitsInStock = 0;
+
+    void _handleTotalPrice() {
+      if (product != null && isNumeric(_quantityController.text)) {
+        int totalPrice =
+            product!.unitPrice * int.parse(_quantityController.text);
+
+        _totalPrice = totalPrice;
+      } else {
+        _totalPrice = 0;
+      }
+    }
+
     Future<void> _addSale() {
-      int totalSales = widget.product!.totalSales == null
+      int totalSales = product!.totalSales == null
           ? 0
-          : widget.product!.totalSales! + int.parse(_quantityController.text);
+          : product!.totalSales! + int.parse(_quantityController.text);
 
       return Sale(
-              productId: widget.product!.id!,
+              productId: product!.id!,
               quantity: int.parse(_quantityController.text),
               totalPrice: _totalPrice!)
           .add()
           .then((value) {
-        Product.update(widget.product!.id!, {
+        Product.update(product!.id!, {
           "unitsInStock": _unitsInStock - int.parse(_quantityController.text),
           "totalSales": totalSales
         });
@@ -76,17 +52,25 @@ class _SaleDialogFormState extends State<SaleDialogForm> {
 
     // Future<void> updateSale() {
     //   return Sale(
-    //           id: widget.sale!.id,
+    //           id: sale!.id,
     //           productId: _productController.text,
     //           quantity: int.parse(_quantityController.text),
     //           totalPrice: int.parse(_priceController.text))
     //       .update();
     // }
 
+    useEffect(() {
+      _quantityController.text = sale == null ? "" : sale!.quantity.toString();
+      _quantityController.addListener(_handleTotalPrice);
+      _unitsInStock = product == null ? 0 : product!.unitsInStock;
+
+      return _disposeControllers;
+    }, []);
+
     return StatefulBuilder(builder: (context, setState) {
       return AlertDialog(
         title: Text(
-          "${widget.sale == null ? "Add" : "Update"} Sale",
+          "${sale == null ? "Add" : "Update"} Sale",
           style: Theme.of(context).textTheme.headline6,
         ),
         content: Form(
@@ -94,15 +78,15 @@ class _SaleDialogFormState extends State<SaleDialogForm> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (widget.product != null)
+                if (product != null)
                   Text(
-                    widget.product!.name,
+                    product!.name,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
 
-                if (widget.product != null)
+                if (product != null)
                   Text(
-                    'Unit Price: Rs. ${widget.product!.unitPrice}',
+                    'Unit Price: Rs. ${product!.unitPrice}',
                     style: TextStyle(
                         fontWeight: FontWeight.bold, color: Colors.grey[600]),
                   ),
@@ -180,7 +164,7 @@ class _SaleDialogFormState extends State<SaleDialogForm> {
                   Navigator.of(context).pop();
                 }
 
-                if (widget.sale == null) {
+                if (sale == null) {
                   _addSale();
                 } else {
                   // updateSale();
