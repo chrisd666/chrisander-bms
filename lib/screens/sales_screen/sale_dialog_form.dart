@@ -1,6 +1,7 @@
 import 'package:bms/models/sale.dart';
 import 'package:bms/models/product.dart';
 import 'package:bms/utils.dart';
+import 'package:bms/widgets/units_selection_button_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -18,35 +19,37 @@ class SaleDialogForm extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    int? _totalPrice;
-    int _unitsInStock = 0;
+    final selectedUnit = useState<UnitType>(UnitType.unit);
+    final _totalPrice = useState(0);
+    int _unitsInStock = product == null ? 0 : product!.unitsInStock;
 
     void _handleTotalPrice() {
       if (product != null && isNumeric(_quantityController.text)) {
-        int totalPrice =
-            product!.unitPrice * int.parse(_quantityController.text);
+        int units = getNoOfUnits(
+            int.parse(_quantityController.text), selectedUnit.value);
+        int totalPrice = product!.unitPrice * units;
 
-        _totalPrice = totalPrice;
+        _totalPrice.value = totalPrice;
       } else {
-        _totalPrice = 0;
+        _totalPrice.value = 0;
       }
     }
 
     Future<void> _addSale() {
-      int totalSales = product!.totalSales == null
-          ? 0
-          : product!.totalSales! + int.parse(_quantityController.text);
+      int units =
+          getNoOfUnits(int.parse(_quantityController.text), selectedUnit.value);
+
+      int totalSales =
+          product!.totalSales == null ? 0 : product!.totalSales! + units;
 
       return Sale(
               productId: product!.id!,
-              quantity: int.parse(_quantityController.text),
-              totalPrice: _totalPrice!)
+              quantity: units,
+              totalPrice: _totalPrice.value)
           .add()
           .then((value) {
-        Product.update(product!.id!, {
-          "unitsInStock": _unitsInStock - int.parse(_quantityController.text),
-          "totalSales": totalSales
-        });
+        Product.update(product!.id!,
+            {"unitsInStock": _unitsInStock - units, "totalSales": totalSales});
       });
     }
 
@@ -62,10 +65,17 @@ class SaleDialogForm extends HookWidget {
     useEffect(() {
       _quantityController.text = sale == null ? "" : sale!.quantity.toString();
       _quantityController.addListener(_handleTotalPrice);
-      _unitsInStock = product == null ? 0 : product!.unitsInStock;
+      selectedUnit.addListener(_handleTotalPrice);
+      // _unitsInStock = product == null ? 0 : product!.unitsInStock;
+
+      print(_unitsInStock);
 
       return _disposeControllers;
     }, []);
+
+    // useEffect(() {
+    //   _handleTotalPrice();
+    // }, [selectedUnit]);
 
     return StatefulBuilder(builder: (context, setState) {
       return AlertDialog(
@@ -122,31 +132,42 @@ class SaleDialogForm extends HookWidget {
                 //       );
                 //     }),
 
-                TextFormField(
-                  controller: _quantityController,
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Invalid Field";
-                    }
+                Container(
+                  margin: const EdgeInsets.only(top: 10),
+                  child: Row(children: [
+                    Expanded(
+                      flex: 2,
+                      child: TextFormField(
+                        controller: _quantityController,
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Invalid Field";
+                          }
 
-                    return null;
-                  },
-                  decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: "Quantity",
-                  ),
+                          return null;
+                        },
+                        decoration: const InputDecoration(
+                            border: UnderlineInputBorder(),
+                            labelText: "Quantity",
+                            contentPadding: EdgeInsets.all(0)),
+                      ),
+                    ),
+                    Expanded(
+                        child: UnitsSelectionButtonField(
+                      selectedUnit: selectedUnit,
+                    ))
+                  ]),
                 ),
 
-                if (_totalPrice != null)
-                  Container(
-                    margin: const EdgeInsets.only(top: 16),
-                    child: Text(
-                      'Total Price: Rs. $_totalPrice',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.grey[600]),
-                    ),
+                Container(
+                  margin: const EdgeInsets.only(top: 16),
+                  child: Text(
+                    'Total Price: Rs. ${_totalPrice.value}',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.grey[600]),
                   ),
+                ),
               ],
             )),
         actions: [

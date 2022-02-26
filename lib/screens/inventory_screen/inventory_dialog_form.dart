@@ -1,6 +1,7 @@
 import 'package:bms/models/product.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import '../../utils.dart';
 import '../../widgets/units_selection_button_field.dart';
 
 class InventoryDialogForm extends HookWidget {
@@ -33,11 +34,8 @@ class InventoryDialogForm extends HookWidget {
     }, []);
 
     Future<void> addProduct() {
-      int unitsInStock = int.parse(_quantityController.text);
-
-      if (selectedUnit.value == UnitType.dozen) {
-        unitsInStock *= 12;
-      }
+      int unitsInStock =
+          getNoOfUnits(int.parse(_quantityController.text), selectedUnit.value);
 
       return Product(
               name: _nameController.text,
@@ -97,7 +95,6 @@ class InventoryDialogForm extends HookWidget {
                 Container(
                   margin: const EdgeInsets.only(top: 10),
                   child: Row(
-                    textBaseline: TextBaseline.alphabetic,
                     children: [
                       Expanded(
                         flex: 2,
