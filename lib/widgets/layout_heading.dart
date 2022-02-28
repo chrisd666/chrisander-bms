@@ -9,21 +9,19 @@ class LayoutHeading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            heading,
-            style: Theme.of(context).textTheme.headline5,
-          ),
-          if (actions != null)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: actions!.map((e) => e).toList(),
-            )
-        ],
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          heading,
+          style: Theme.of(context).textTheme.headline5,
+        ),
+        if (actions != null)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: actions!.map((e) => e).toList(),
+          )
+      ],
     );
   }
 }

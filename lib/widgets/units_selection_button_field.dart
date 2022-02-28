@@ -16,21 +16,21 @@ class UnitsSelectionButtonField extends HookWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
-        value: _getUnitTypeString(selectedUnit.value),
-        decoration: const InputDecoration(contentPadding: EdgeInsets.all(0)),
-        items: const [
-          DropdownMenuItem(
-            value: 'unit(s)',
-            child: Text('unit(s)'),
-          ),
-          DropdownMenuItem(
-            value: 'dozen',
-            child: Text('dozen'),
-          )
-        ],
-        onChanged: (val) {
-          selectedUnit.value =
-              val! == 'unit(s)' ? UnitType.unit : UnitType.dozen;
-        });
+      value: _getUnitTypeString(selectedUnit.value),
+      decoration: const InputDecoration(contentPadding: EdgeInsets.all(0)),
+      items: const [
+        DropdownMenuItem(
+          value: 'unit(s)',
+          child: Text('unit(s)'),
+        ),
+        DropdownMenuItem(
+          value: 'dozen',
+          child: Text('dozen'),
+        )
+      ],
+      onChanged: (val) {
+        selectedUnit.value = val! == 'unit(s)' ? UnitType.unit : UnitType.dozen;
+      },
+    );
   }
 }

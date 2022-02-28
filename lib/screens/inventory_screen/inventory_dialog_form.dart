@@ -22,6 +22,8 @@ class InventoryDialogForm extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final selectedUnit = useState<UnitType>(UnitType.unit);
+    final updatedUnitsInStock =
+        useState(product == null ? 0 : product!.unitsInStock);
 
     useEffect(() {
       _nameController.text = product == null ? "" : product!.name;
@@ -33,13 +35,18 @@ class InventoryDialogForm extends HookWidget {
       return _disposeControllers;
     }, []);
 
-    Future<void> addProduct() {
-      int unitsInStock =
-          getNoOfUnits(int.parse(_quantityController.text), selectedUnit.value);
+    useEffect(() {
+      if (_quantityController.text != "") {
+        updatedUnitsInStock.value = getNoOfUnits(
+            int.parse(_quantityController.text), selectedUnit.value);
+      }
+      return null;
+    }, [_quantityController.text, selectedUnit.value]);
 
+    Future<void> addProduct() {
       return Product(
               name: _nameController.text,
-              unitsInStock: unitsInStock,
+              unitsInStock: updatedUnitsInStock.value,
               unitPrice: int.parse(_priceController.text))
           .add();
     }
@@ -47,7 +54,7 @@ class InventoryDialogForm extends HookWidget {
     Future<void> updateProduct() {
       return Product.update(product!.id!, {
         "name": _nameController.text,
-        "unitsInStock": int.parse(_quantityController.text),
+        "unitsInStock": updatedUnitsInStock.value,
         "unitPrice": int.parse(_priceController.text)
       });
     }

@@ -51,9 +51,10 @@ class Sale {
       FirebaseFirestore.instance.collection('sales');
 
   Future<void> add() {
-    return salesRef.add(toJson()).then((value) {
-      print("Sale added");
-    }).catchError((error) => print("Failed to add sales: $error"));
+    return salesRef
+        .add(toJson())
+        .then((value) {})
+        .catchError((error) => print("Failed to add sales: $error"));
   }
 
   static Future<List> findAll(List sales) async {

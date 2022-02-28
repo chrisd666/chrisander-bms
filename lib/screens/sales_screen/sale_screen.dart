@@ -9,14 +9,14 @@ class SaleScreen extends StatelessWidget {
 
   SaleScreen({Key? key}) : super(key: key);
 
-  Future<void> _showCreateUpdateDialogForm(BuildContext context,
-      {Sale? sale}) async {
-    return await showDialog(
-        context: context,
-        builder: (context) {
-          return SaleDialogForm(sale: sale);
-        });
-  }
+  // Future<void> _showCreateUpdateDialogForm(BuildContext context,
+  //     {Sale? sale}) async {
+  //   return await showDialog(
+  //       context: context,
+  //       builder: (context) {
+  //         return SaleDialogForm(sale: sale);
+  //       });
+  // }
 
   @override
   Widget build(BuildContext context) {

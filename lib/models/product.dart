@@ -60,7 +60,6 @@ class Product {
 
   static findOne(String id) async {
     return productsRef.doc(id).get().then((value) {
-      print("Product found");
       return {
         "name": value['name'],
         'unitsInStock': value['unitsInStock'],
