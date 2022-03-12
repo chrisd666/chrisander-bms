@@ -1,3 +1,4 @@
+import 'package:bms/models/inventory.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Product {
@@ -52,10 +53,23 @@ class Product {
   //     toFirestore: (product, _) => product.toJson());
 
   Future<void> add() {
-    return productsRef
-        .add(toJson())
-        .then((value) => print("Product added"))
-        .catchError((error) => print("Failed to add product: $error"));
+    return productsRef.add(toJson()).then((value) async {
+      bool isAddedToInventory = await Inventory(
+        businessId: 'nl4AolUR6ViZp3u8NbZc',
+        openingBalance: 0,
+        closingBalance: unitsInStock,
+        productId: value.id,
+        quantity: unitsInStock,
+      ).add();
+
+      if (isAddedToInventory != true) {
+        await delete(value.id);
+        print("Failed to add product");
+        return false;
+      }
+
+      print("Product added");
+    }).catchError((error) => print("Failed to add product: $error"));
   }
 
   static findOne(String id) async {

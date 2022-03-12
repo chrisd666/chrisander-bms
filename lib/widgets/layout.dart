@@ -38,13 +38,13 @@ class Layout extends StatelessWidget {
               Navigator.pushNamed(context, 'sales');
             },
           ),
-          // ListTile(
-          //   title: const Text('Inventory Logs'),
-          //   leading: const Icon(Icons.list_alt),
-          //   onTap: () {
-          //     Navigator.pushNamed(context, 'inventory-logs');
-          //   },
-          // ),
+          ListTile(
+            title: const Text('Inventory Logs'),
+            leading: const Icon(Icons.list_alt),
+            onTap: () {
+              Navigator.pushNamed(context, 'inventory-logs');
+            },
+          ),
         ]),
       ),
       body: DoubleBackToCloseApp(
