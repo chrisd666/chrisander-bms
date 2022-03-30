@@ -28,7 +28,7 @@ class Inventory {
 
   Map<String, Object?> toJson() {
     return {
-      'businessId': 'nl4AolUR6ViZp3u8NbZc',
+      'businessId': businessId,
       'productId': productId,
       'quantity': quantity,
       'openingBalance': openingBalance,
@@ -36,15 +36,15 @@ class Inventory {
     };
   }
 
-  static CollectionReference productsRef = FirebaseFirestore.instance
+  static CollectionReference inventoryRef = FirebaseFirestore.instance
       .collection('inventories')
       .withConverter<Inventory>(
           fromFirestore: (snapshot, _) => Inventory.fromJson(snapshot.data()!),
           toFirestore: (product, _) => product.toJson());
 
   Future<bool> add() {
-    return productsRef
-        .add(toJson())
+    return inventoryRef
+        .add(this)
         .then((value) => true)
         .catchError((error) => {print("Failed to add inventory log: $error")});
   }
@@ -60,7 +60,7 @@ class Inventory {
   // }
 
   static findFirst(String field, dynamic value) async {
-    return productsRef
+    return inventoryRef
         .where(field, isEqualTo: value)
         .get()
         .then((value) => value.docs)

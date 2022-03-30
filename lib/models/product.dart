@@ -57,10 +57,12 @@ class Product {
       bool isAddedToInventory = await Inventory(
         businessId: 'nl4AolUR6ViZp3u8NbZc',
         openingBalance: 0,
-        closingBalance: unitsInStock,
+        closingBalance: this.unitsInStock,
         productId: value.id,
-        quantity: unitsInStock,
+        quantity: this.unitsInStock,
       ).add();
+
+      print('isAddedToInventory: $isAddedToInventory');
 
       if (isAddedToInventory != true) {
         await delete(value.id);

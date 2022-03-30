@@ -31,16 +31,19 @@ analyzer:
 
 dart_code_metrics:
   metrics:
-    cyclomatic-complexity: 20
-    number-of-parameters: 4
-    maximum-nesting-level: 5
+    cyclomatic-complexity
+    number-of-parameters
+    maximum-nesting-level
+    halstead-volume
+    lines-of-code
+    maintainablility-index
+    source-lines-of-code
   metrics-exclude:
     - test/**
   rules:
     - newline-before-return
     - no-boolean-literal-compare
     - no-empty-block
-    - prefer-trailing-comma
     - prefer-conditional-expressions
     - no-equal-then-else
   anti-patterns:

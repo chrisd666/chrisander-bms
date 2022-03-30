@@ -25,6 +25,14 @@ class InventoryDialogForm extends HookWidget {
     final updatedUnitsInStock =
         useState(product == null ? 0 : product!.unitsInStock);
 
+    void handleUpdatedUnits(ValueNotifier<int> updatedUnitsInStock,
+        ValueNotifier<UnitType> selectedUnit) {
+      if (_quantityController.text != "") {
+        updatedUnitsInStock.value = getNoOfUnits(
+            int.parse(_quantityController.text), selectedUnit.value);
+      }
+    }
+
     useEffect(() {
       _nameController.text = product == null ? "" : product!.name;
       _quantityController.text =
@@ -32,16 +40,16 @@ class InventoryDialogForm extends HookWidget {
       _priceController.text =
           product == null ? "" : product!.unitPrice.toString();
 
-      return _disposeControllers;
-    }, []);
+      _quantityController.addListener(() {
+        handleUpdatedUnits(updatedUnitsInStock, selectedUnit);
+      });
 
-    useEffect(() {
-      if (_quantityController.text != "") {
-        updatedUnitsInStock.value = getNoOfUnits(
-            int.parse(_quantityController.text), selectedUnit.value);
-      }
-      return null;
-    }, [_quantityController.text, selectedUnit.value]);
+      selectedUnit.addListener(() {
+        handleUpdatedUnits(updatedUnitsInStock, selectedUnit);
+      });
+
+      return _disposeControllers;
+    }, [_quantityController, selectedUnit]);
 
     Future<void> addProduct() {
       return Product(
@@ -66,79 +74,81 @@ class InventoryDialogForm extends HookWidget {
           style: Theme.of(context).textTheme.headline6,
         ),
         content: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: _nameController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Invalid Field";
-                    }
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: _nameController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Invalid Field";
+                  }
 
-                    return null;
-                  },
-                  decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: "Product name",
-                  ),
+                  return null;
+                },
+                decoration: const InputDecoration(
+                  border: UnderlineInputBorder(),
+                  labelText: "Product name",
                 ),
-                TextFormField(
-                  controller: _priceController,
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Invalid Field";
-                    }
+              ),
+              TextFormField(
+                controller: _priceController,
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Invalid Field";
+                  }
 
-                    return null;
-                  },
-                  decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: "Price",
-                  ),
+                  return null;
+                },
+                decoration: const InputDecoration(
+                  border: UnderlineInputBorder(),
+                  labelText: "Price",
                 ),
-                Container(
-                  margin: const EdgeInsets.only(top: 10),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: TextFormField(
-                          controller: _quantityController,
-                          keyboardType: TextInputType.number,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Invalid Field";
-                            }
+              ),
+              Container(
+                margin: const EdgeInsets.only(top: 10),
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: TextFormField(
+                        controller: _quantityController,
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Invalid Field";
+                          }
 
-                            return null;
-                          },
-                          decoration: const InputDecoration(
-                              border: UnderlineInputBorder(),
-                              labelText: "Quantity",
-                              contentPadding: EdgeInsets.all(0)),
-                        ),
+                          return null;
+                        },
+                        decoration: const InputDecoration(
+                            border: UnderlineInputBorder(),
+                            labelText: "Quantity",
+                            contentPadding: EdgeInsets.all(0)),
                       ),
-                      Expanded(
-                        child: UnitsSelectionButtonField(
-                            selectedUnit: selectedUnit),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            )),
+                    ),
+                    Expanded(
+                      child:
+                          UnitsSelectionButtonField(selectedUnit: selectedUnit),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
         actions: [
           TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                "CANCEL",
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
-              )),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text(
+              "CANCEL",
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+          ),
           TextButton(
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
@@ -151,7 +161,7 @@ class InventoryDialogForm extends HookWidget {
                   updateProduct();
                 }
               },
-              child: const Text('SUBMIT'))
+              child: const Text('SUBMIT')),
         ],
       );
     });
