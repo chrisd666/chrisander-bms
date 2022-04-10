@@ -7,6 +7,7 @@ class Inventory {
   final int quantity;
   final int openingBalance;
   final int closingBalance;
+  final FieldValue? createdAt;
 
   Inventory(
       {this.id,
@@ -14,17 +15,18 @@ class Inventory {
       required this.quantity,
       required this.openingBalance,
       required this.closingBalance,
-      required this.businessId});
+      required this.businessId,
+      this.createdAt});
 
   Inventory.fromJson(Map<String, Object?> json)
       : this(
-          id: json['id']! as String,
-          businessId: json['businessId']! as String,
-          productId: json['productId']! as String,
-          quantity: json['quantity']! as int,
-          openingBalance: json['openingBalance']! as int,
-          closingBalance: json['closingBalance']! as int,
-        );
+            id: json['id']! as String,
+            businessId: json['businessId']! as String,
+            productId: json['productId']! as String,
+            quantity: json['quantity']! as int,
+            openingBalance: json['openingBalance']! as int,
+            closingBalance: json['closingBalance']! as int,
+            createdAt: json['createdAt']! as FieldValue);
 
   Map<String, Object?> toJson() {
     return {
@@ -67,13 +69,20 @@ class Inventory {
         .catchError((error) => print("Failed to find inventory log: $error"));
   }
 
-  // static Future<void> update(String id, Map<String, Object> data) {
-  //   return productsRef
-  //       .doc(id)
-  //       .update(data)
-  //       .then((value) => print("Product updated"))
-  //       .catchError((error) => print("Failed to update product: $error"));
-  // }
+  static Future<bool> updateByProductId(
+      String productId, Map<String, Object> data) async {
+    dynamic inventory = await findFirst('productId', productId);
+
+    if (inventory == null) return false;
+
+    print(inventory);
+
+    return true;
+    // return inventoryRef.doc().update(data).then((value) {
+    //   print("Inventory updated");
+    //   return true;
+    // }).catchError((error) => print("Failed to update product: $error"));
+  }
 
   // static Future<void> delete(String id) {
   //   return productsRef

@@ -55,14 +55,13 @@ class Product {
   Future<void> add() {
     return productsRef.add(toJson()).then((value) async {
       bool isAddedToInventory = await Inventory(
-        businessId: 'nl4AolUR6ViZp3u8NbZc',
-        openingBalance: 0,
-        closingBalance: this.unitsInStock,
-        productId: value.id,
-        quantity: this.unitsInStock,
-      ).add();
-
-      print('isAddedToInventory: $isAddedToInventory');
+              businessId: 'nl4AolUR6ViZp3u8NbZc',
+              openingBalance: 0,
+              closingBalance: unitsInStock,
+              productId: value.id,
+              quantity: unitsInStock,
+              createdAt: FieldValue.serverTimestamp())
+          .add();
 
       if (isAddedToInventory != true) {
         await delete(value.id);
@@ -85,11 +84,12 @@ class Product {
   }
 
   static Future<void> update(String id, Map<String, Object> data) {
-    return productsRef
-        .doc(id)
-        .update(data)
-        .then((value) => print("Product updated"))
-        .catchError((error) => print("Failed to update product: $error"));
+    return productsRef.doc(id).update(data).then((value) async {
+      // if (data['unitsInStock'] != null) {
+
+      //   bool isUpdated = await Inventory.updateByProductId(id, {''});
+      // }
+    }).catchError((error) => print("Failed to update product: $error"));
   }
 
   static Future<void> delete(String id) {
